@@ -58,9 +58,9 @@ public class ItemController {
 
         List<Item> items = service.getAll(ownerId);
 
-        return items.stream().
-                map(ItemMapper::toItemDto).
-                collect(Collectors.toList());
+        return items.stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/search")
@@ -69,9 +69,9 @@ public class ItemController {
 
         List<Item> items = service.findByText(text);
 
-        return items.stream().
-                map(ItemMapper::toItemDto).
-                collect(Collectors.toList());
+        return items.stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
 }

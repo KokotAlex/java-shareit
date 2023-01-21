@@ -24,9 +24,9 @@ public class UserController {
 
         List<User> users = service.getAll();
 
-        return users.stream().
-                map(UserMapper::toUserDto).
-                collect(Collectors.toList());
+        return users.stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @PostMapping

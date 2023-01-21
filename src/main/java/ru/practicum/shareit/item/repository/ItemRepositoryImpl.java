@@ -68,9 +68,9 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> findAll(Long ownerId) {
-        List<Item> itemList = items.values().stream().
-                filter(item -> Objects.equals(item.getOwnerId(), ownerId)).
-                collect(Collectors.toList());
+        List<Item> itemList = items.values().stream()
+                .filter(item -> Objects.equals(item.getOwnerId(), ownerId))
+                .collect(Collectors.toList());
 
         log.debug("Finding all items for owner with id {}", ownerId);
 
@@ -80,12 +80,12 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<Item> findByText(String text) {
         String lowerText = text.toLowerCase();
-        List<Item> itemList = items.values().stream().
-                filter(item ->
+        List<Item> itemList = items.values().stream()
+                .filter(item ->
                         (item.getName().toLowerCase().contains(lowerText))
-                                || (item.getDescription().toLowerCase().contains(lowerText))).
-                filter(Item::getAvailable).
-                collect(Collectors.toList());
+                                || (item.getDescription().toLowerCase().contains(lowerText)))
+                .filter(Item::getAvailable)
+                .collect(Collectors.toList());
 
         log.debug("Finding all items with text: {}", text);
 

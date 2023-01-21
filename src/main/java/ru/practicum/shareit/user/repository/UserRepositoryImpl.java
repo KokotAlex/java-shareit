@@ -51,11 +51,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean emailIsExist(String email) {
-        boolean result = findAll().
-                stream().
-                anyMatch(user -> user.getEmail().
-                        toLowerCase().
-                        contains(email.toLowerCase()));
+        boolean result = findAll()
+                .stream()
+                .anyMatch(user -> user.getEmail()
+                        .toLowerCase()
+                        .contains(email.toLowerCase()));
 
         log.debug("User with email {} is exist: {}", email, result);
 

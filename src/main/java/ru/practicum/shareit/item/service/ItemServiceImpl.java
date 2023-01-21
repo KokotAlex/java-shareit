@@ -37,8 +37,8 @@ public class ItemServiceImpl implements ItemService {
     public Item getById(Long itemId) {
         log.info("Start getting item by id {}", itemId);
 
-        Item foundedItem = repository.findById(itemId).
-                orElseThrow(() -> new NotFoundException(Item.class.getSimpleName(), itemId));
+        Item foundedItem = repository.findById(itemId)
+                        .orElseThrow(() -> new NotFoundException(Item.class.getSimpleName(), itemId));
 
         log.info("Finish getting item by id {}", itemId);
 

@@ -45,8 +45,8 @@ class UserServiceImpl implements UserService {
     public User getById(Long userId) {
         log.info("Start getting user by id {}", userId);
 
-        User newUser = repository.findById(userId).
-                orElseThrow(() -> new NotFoundException(User.class.getSimpleName(), userId));
+        User newUser = repository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class.getSimpleName(), userId));
 
         log.info("Finish getting user by id {}", userId);
 
@@ -59,9 +59,9 @@ class UserServiceImpl implements UserService {
 
         checkUserExist(userId);
 
-        String UsersEmail = user.getEmail();
-        if (UsersEmail != null) {
-            checkUsersEmail(UsersEmail);
+        String userEmail = user.getEmail();
+        if (userEmail != null) {
+            checkUsersEmail(userEmail);
         }
 
         repository.update(userId, user);
