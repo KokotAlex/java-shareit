@@ -56,9 +56,7 @@ public class ItemController {
     public List<ItemDto> getAllOwnersItems(@RequestHeader(HEADER_OWNER_ID) Long ownerId) {
         log.info("Handling get all items for owner with id {}", ownerId);
 
-        List<Item> items = service.getAll(ownerId);
-
-        return items.stream()
+        return service.getAll(ownerId).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -67,9 +65,7 @@ public class ItemController {
     public List<ItemDto> findItemsByText(@RequestParam String text) {
         log.info("Processing a request to search for an item by text: {}", text);
 
-        List<Item> items = service.findByText(text);
-
-        return items.stream()
+        return service.findByText(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

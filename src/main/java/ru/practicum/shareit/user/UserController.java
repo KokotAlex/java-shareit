@@ -22,9 +22,7 @@ public class UserController {
     public List<UserDto> getAllUsers() {
         log.info("Handling get all users request");
 
-        List<User> users = service.getAll();
-
-        return users.stream()
+        return service.getAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }

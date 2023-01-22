@@ -16,7 +16,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<Object> handleNotFoundException(NotFoundException exception) {
-        log.info("404: {}", exception.getMessage(), exception);
+        log.error("404: {}", exception.getMessage(), exception);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ApiError("Entity not found", exception.getMessage()));
@@ -24,26 +24,26 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException exception) {
-        log.info("400: {}", exception.getMessage(), exception);
+        log.error("400: {}", exception.getMessage(), exception);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError("Validation error", exception.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<Object> incorrectParameterException(Throwable exception) {
-        log.info("500: {}", exception.getMessage(), exception);
+    public ResponseEntity<Object> handleInternalException(Throwable exception) {
+        log.error("500: {}", exception.getMessage(), exception);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiError("500", exception.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<Object> incorrectParameterException(IncorrectParameterException exception) {
-        log.info("409: {}", exception.getMessage(), exception);
+    public ResponseEntity<Object> incorrectParameterException(BadRequestException exception) {
+        log.error("409: {}", exception.getMessage(), exception);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new ApiError("Incorrect parameter", exception.getMessage()));
+                .body(new ApiError("Conflicting request", exception.getMessage()));
     }
 
     @Data

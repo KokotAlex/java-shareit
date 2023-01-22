@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.IncorrectParameterException;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -90,7 +90,7 @@ class UserServiceImpl implements UserService {
 
     private void checkUsersEmail(String Email) {
         if (repository.emailIsExist(Email)) {
-            throw new IncorrectParameterException("Пользователь с Email " + Email + " уже существует.");
+            throw new BadRequestException("Пользователь с Email " + Email + " уже существует.");
         }
     }
 }
