@@ -22,38 +22,28 @@ public class UserController {
     public List<UserDto> getAllUsers() {
         log.info("Handling get all users request");
 
-        return service.getAll().stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+        return service.getAllDto();
     }
 
     @PostMapping
     public UserDto saveNewUser(@Valid @RequestBody UserDto userDto) {
         log.info("Handling a request to create a new user");
 
-        User user = UserMapper.toUser(userDto);
-        User createdUser = service.save(user);
-
-        return UserMapper.toUserDto(createdUser);
+        return service.save(userDto);
     }
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
         log.info("Handling a request to update the user with id {}", userId);
 
-        User user = UserMapper.toUser(userDto);
-        User updatedUser = service.update(userId, user);
-
-        return UserMapper.toUserDto(updatedUser);
+        return service.update(userId, userDto);
     }
 
     @GetMapping("/{userId}")
     public UserDto getUserById(@PathVariable Long userId) {
         log.info("Handling a request to get a user with id {}", userId);
 
-        User user = service.getById(userId);
-
-        return UserMapper.toUserDto(user);
+        return service.getDtoById(userId);
     }
 
     @DeleteMapping("/{userId}")

@@ -13,6 +13,14 @@ public class UserMapper {
                 .build();
     }
 
+    public static UserDto.Nested toUserDtoShort(User user) {
+        return UserDto.Nested.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .build();
+    }
+
     public static User toUser(UserDto user) {
         return User.builder()
                 .id(user.getId())

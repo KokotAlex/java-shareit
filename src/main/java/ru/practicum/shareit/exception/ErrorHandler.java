@@ -40,10 +40,10 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<Object> incorrectParameterException(BadRequestException exception) {
-        log.error("409: {}", exception.getMessage(), exception);
+        log.error("400: {}", exception.getMessage(), exception);
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ApiError("Conflicting request", exception.getMessage()));
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiError("Bad Request", exception.getMessage()));
     }
 
     @Data
@@ -51,8 +51,6 @@ public class ErrorHandler {
     @NoArgsConstructor
     private static class ApiError {
         private String message;
-        private String debugMessage;
+        private String error;
     }
-
-
 }
