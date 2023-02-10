@@ -7,8 +7,10 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Builder
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommentDto {
     private Long id;
 
@@ -20,8 +22,10 @@ public class CommentDto {
     private LocalDateTime created;
 
     @Builder
-    @Getter @Setter
-    @AllArgsConstructor @NoArgsConstructor
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Nested {
         private Long id;
         private String text;

@@ -11,8 +11,10 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "bookings")
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Booking {
 
     @Id

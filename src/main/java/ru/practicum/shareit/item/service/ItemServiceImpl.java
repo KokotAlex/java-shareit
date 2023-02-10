@@ -41,6 +41,7 @@ public class ItemServiceImpl implements ItemService {
 
         return ItemMapper.toItemDto(savedItem, ownerId);
     }
+
     @Override
     public Item getById(Long itemId) {
         log.info("Start getting item by id {}", itemId);

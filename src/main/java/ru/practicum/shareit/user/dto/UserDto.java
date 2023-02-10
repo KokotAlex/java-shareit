@@ -7,8 +7,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Builder
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
     private Long id;
 
@@ -21,8 +23,10 @@ public class UserDto {
     private String name;
 
     @Builder
-    @Getter @Setter
-    @AllArgsConstructor @NoArgsConstructor
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Nested {
         private Long id;
         private String email;

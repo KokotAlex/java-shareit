@@ -10,8 +10,10 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "comments")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

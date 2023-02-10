@@ -9,8 +9,10 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Builder
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
     private Long id;
 
@@ -30,8 +32,10 @@ public class ItemDto {
     private Set<CommentDto.Nested> comments;
 
     @Builder
-    @Getter @Setter
-    @AllArgsConstructor @NoArgsConstructor
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Nested {
         private Long id;
         private String name;

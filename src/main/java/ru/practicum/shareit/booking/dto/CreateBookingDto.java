@@ -8,8 +8,10 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Builder
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateBookingDto {
 
     private Long id;

@@ -8,8 +8,10 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.time.LocalDateTime;
 
 @Builder
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookingDto {
 
     private Long id;
@@ -20,8 +22,10 @@ public class BookingDto {
     private UserDto.Nested booker;
 
     @Builder
-    @Getter @Setter
-    @AllArgsConstructor @NoArgsConstructor
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Nested {
         private Long id;
         private LocalDateTime start;
