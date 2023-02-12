@@ -9,8 +9,10 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "requests")
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequest {
 
     @Id
