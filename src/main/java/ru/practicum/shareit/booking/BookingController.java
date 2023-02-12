@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -25,7 +26,10 @@ public class BookingController {
                                      @Valid @RequestBody CreateBookingDto createBookingDto) {
         log.info("Handling a request to create a new booking for user with id {}", bookerId);
 
-        return service.save(bookerId, createBookingDto);
+        Booking booking = BookingMapper.toBooking(createBookingDto);
+        Booking savedBooking = service.save(bookerId, booking, createBookingDto.getItemId());
+
+        return BookingMapper.toBookingDto(savedBooking, bookerId);
     }
 
     @PatchMapping("/{bookingId}")
@@ -34,7 +38,9 @@ public class BookingController {
                                 @RequestParam(defaultValue = "false") Boolean approved) {
         log.info("Processing a booking confirmation request that has an id {}", bookingId);
 
-        return service.approveDto(ownerId, bookingId, approved);
+        Booking booking = service.approve(ownerId, bookingId, approved);
+
+        return BookingMapper.toBookingDto(booking, ownerId);
     }
 
     @GetMapping("/{bookingId}")
@@ -42,7 +48,9 @@ public class BookingController {
                                  @PathVariable Long bookingId) {
         log.info("Processing a getting booking by user id {}", bookingId);
 
-        return service.getDtoByIdAndUserId(bookingId, userId);
+        Booking booking = service.getByIdAndUserId(bookingId, userId);
+
+        return BookingMapper.toBookingDto(booking, userId);
     }
 
     @GetMapping
@@ -50,7 +58,11 @@ public class BookingController {
                                    @RequestParam(defaultValue = "ALL") String state) {
         log.info("Processing a getting {} bookings for booker id {}", state, bookerId);
 
-        return service.getBookingsDtoByBookerId(bookerId, state);
+        List<Booking> bookings = service.getBookingsByBookerId(bookerId, state);
+
+        return bookings.stream()
+                .map(booking -> BookingMapper.toBookingDto(booking, bookerId))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
@@ -58,6 +70,10 @@ public class BookingController {
                                    @RequestParam(defaultValue = "ALL") String state) {
         log.info("Processing a getting {} bookings for owner id {}", state, ownerId);
 
-        return service.getBookingsDtoByOwnerId(ownerId, state);
+        List<Booking> bookings = service.getBookingsByOwnerId(ownerId, state);
+
+        return bookings.stream()
+                .map(booking -> BookingMapper.toBookingDto(booking, ownerId))
+                .collect(Collectors.toList());
     }
 }

@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -19,7 +16,6 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,47 +41,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto save(Long bookerId, CreateBookingDto createBookingDto) {
-        Booking booking = BookingMapper.toBooking(createBookingDto);
-        Booking savedBooking = save(bookerId, booking, createBookingDto.getItemId());
-
-        return BookingMapper.toBookingDto(savedBooking, bookerId);
-    }
-
-    @Override
-    @Transactional
-    public BookingDto approveDto(Long ownerId, Long bookingId, Boolean approved) {
-        Booking booking = approve(ownerId, bookingId, approved);
-
-        return BookingMapper.toBookingDto(booking, ownerId);
-    }
-
-    @Override
-    public BookingDto getDtoByIdAndUserId(Long bookingId, Long userId) {
-        Booking booking = getByIdAndUserId(bookingId, userId);
-
-        return BookingMapper.toBookingDto(booking, userId);
-    }
-
-    @Override
-    public List<BookingDto> getBookingsDtoByBookerId(Long bookerId, String state) {
-        List<Booking> bookings = getBookingsByBookerId(bookerId, state);
-
-        return bookings.stream()
-                .map(booking -> BookingMapper.toBookingDto(booking, bookerId))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BookingDto> getBookingsDtoByOwnerId(Long ownerId, String state) {
-        List<Booking> bookings = getBookingsByOwnerId(ownerId, state);
-
-        return bookings.stream()
-                .map(booking -> BookingMapper.toBookingDto(booking, ownerId))
-                .collect(Collectors.toList());
-    }
-
-    private Booking save(Long bookerId, Booking booking, Long itemId) {
+    public Booking save(Long bookerId, Booking booking, Long itemId) {
         log.info("Start saving booking {}", booking);
 
         Item item = itemService.getById(itemId);
@@ -133,7 +89,9 @@ public class BookingServiceImpl implements BookingService {
         return newBooking;
     }
 
-    private Booking approve(Long ownerId, Long bookingId, Boolean approved) {
+    @Override
+    @Transactional
+    public Booking approve(Long ownerId, Long bookingId, Boolean approved) {
         log.info("Start approving a booking with id {}", bookingId);
 
         // Получим заявку на бронирование.
@@ -165,7 +123,8 @@ public class BookingServiceImpl implements BookingService {
         return savedBooking;
     }
 
-    private Booking getByIdAndUserId(Long bookingId, Long userId) {
+    @Override
+    public Booking getByIdAndUserId(Long bookingId, Long userId) {
         log.info("Start getting booking by id and user id {}", bookingId);
 
         Booking booking = getById(bookingId);
@@ -181,7 +140,8 @@ public class BookingServiceImpl implements BookingService {
         return booking;
     }
 
-    private List<Booking> getBookingsByBookerId(Long bookerId, String state) {
+    @Override
+    public List<Booking> getBookingsByBookerId(Long bookerId, String state) {
         log.info("Start getting {} bookings by booker with id {}", state, bookerId);
 
         userService.checkUserExist(bookerId);
@@ -214,7 +174,8 @@ public class BookingServiceImpl implements BookingService {
         return bookings;
     }
 
-    private List<Booking> getBookingsByOwnerId(Long ownerId, String state) {
+    @Override
+    public List<Booking> getBookingsByOwnerId(Long ownerId, String state) {
         log.info("Start getting {} bookings by owner with id {}", state, ownerId);
 
         userService.checkUserExist(ownerId);

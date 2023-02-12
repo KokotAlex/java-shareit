@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.QItem;
@@ -21,7 +18,6 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,11 +31,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemDto save(Long ownerId, ItemDto itemDto) {
-        Item item = ItemMapper.toItem(itemDto);
-        Item savedItem = save(ownerId, item);
+    public Item save(Long ownerId, Item item) {
+        log.info("Start saving item {}", item);
 
-        return ItemMapper.toItemDto(savedItem, ownerId);
+        User owner = userService.getById(ownerId);
+
+        item.setOwner(owner);
+        Item newItem = itemRepository.save(item);
+
+        log.info("Finish saving user {}", item);
+
+        return newItem;
     }
 
     @Override
@@ -55,59 +57,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getDtoById(Long itemId, Long userId) {
-        Item item = getById(itemId);
-
-        return ItemMapper.toItemDto(item, userId);
-    }
-
-    @Override
     @Transactional
-    public ItemDto update(Long ownerId, Long itemId, ItemDto itemDto) {
-        Item item = ItemMapper.toItem(itemDto);
-        Item updatedItem = update(ownerId, itemId, item);
-
-        return ItemMapper.toItemDto(updatedItem, ownerId);
-    }
-
-    @Override
-    public List<ItemDto> getAllDto(Long ownerId) {
-
-        return getAll(ownerId).stream()
-                .map(item -> ItemMapper.toItemDto(item, ownerId))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ItemDto> findDtoByText(String text, Long userId) {
-        return findByText(text).stream()
-                .map(item -> ItemMapper.toItemDto(item, userId))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public CommentDto saveCommentDto(CommentDto commentDto, Long authorId, Long itemId) {
-        Comment comment = ItemMapper.toComment(commentDto);
-        Comment savedComment = saveComment(comment, authorId, itemId);
-
-        return ItemMapper.toCommentDto(savedComment);
-    }
-
-    private Item save(Long ownerId, Item item) {
-        log.info("Start saving item {}", item);
-
-        User owner = userService.getById(ownerId);
-
-        item.setOwner(owner);
-        Item newItem = itemRepository.save(item);
-
-        log.info("Finish saving user {}", item);
-
-        return newItem;
-    }
-
-    private Item update(Long ownerId, Long itemId, Item item) {
+    public Item update(Long ownerId, Long itemId, Item item) {
         log.info("Start updating item by id {} for owner with id {}", itemId, ownerId);
 
         User currentOwner = userService.getById(ownerId);
@@ -143,7 +94,8 @@ public class ItemServiceImpl implements ItemService {
         return updatedItem;
     }
 
-    private List<Item> getAll(Long ownerId) {
+    @Override
+    public List<Item> getAll(Long ownerId) {
         log.info("Start getting all items for owner with id {}", ownerId);
 
         User owner = userService.getById(ownerId);
@@ -154,7 +106,8 @@ public class ItemServiceImpl implements ItemService {
         return items;
     }
 
-    private List<Item> findByText(String text) {
+    @Override
+    public List<Item> findByText(String text) {
         log.info("Start getting all items with text: {}", text);
 
         if (text.isBlank()) {
@@ -177,7 +130,9 @@ public class ItemServiceImpl implements ItemService {
         return items;
     }
 
-    private Comment saveComment(Comment comment, Long authorId, Long itemId) {
+    @Override
+    @Transactional
+    public Comment saveComment(Comment comment, Long authorId, Long itemId) {
 
         Item item = getById(itemId);
         // Проверим, заказывал ли данный пользователь текущую вещь.

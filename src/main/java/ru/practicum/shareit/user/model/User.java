@@ -4,6 +4,7 @@ import lombok.*;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 
 import javax.persistence.*;
 import java.util.*;
@@ -26,10 +27,13 @@ public class User {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Comment> comments = new HashSet<>();
 
+    @OneToMany(mappedBy = "requestor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final Set<ItemRequest> requests = new HashSet<>();
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 250)
     private String email;
 
     @Column(nullable = false, length = 50)
