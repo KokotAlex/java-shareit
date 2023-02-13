@@ -1,39 +1,40 @@
-# logging
-logging:
-  level:
-    ru.practicum.shareit: debug
 
-    org:
-      springframework:
-        orm:
-          jpa: INFO
-          jpa.JpaTransactionManager: DEBUG
-        transaction: INFO
-        transaction.interceptor: TRACE
-
-# server
-server:
-  port: 8080
-
-# spring
 spring:
   jpa:
     hibernate:
-      ddl-auto: none
-    properties.hibernate:
-      dialect: org.hibernate.dialect.PostgreSQL10Dialect
-      format_sql: true
+#      ddl-auto: none
+      ddl-auto: create-drop
+      properties:
+        hibernate:
+#          dialect: org.hibernate.dialect.PostgreSQL10Dialect
+          dialect: org.hibernate.dialect.H2Dialect
+          format_sql: true
+    show-sql: true
+  sql:
+    init:
+      mode: always
+  data:
+    rest:
+      basePath: /api
 
-  sql.init.mode: always
-
-  config.activate.on-profile: ci,test
+#  config:
+#    activate:
+#      on-profile: ci,test
 
   datasource:
-    driverClassName: org.h2.Driver
+#    url: jdbc:postgresql://localhost:5432/shareit?encoding=utf8
     url: jdbc:h2:mem:shareit
-    username: test
-    password: test
+    username: root
+    password: root
+#    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
 
-#---
-# TODO Append connection to DB
-#---
+logging:
+  level:
+    org.springframework:orm.jpa: info
+    org.springframework.orm.jpa.JpaTransactionManager: debug
+    org.springframework.transaction: info
+    org.springframework.transaction.interceptor: trace
+
+server:
+  port: 8080

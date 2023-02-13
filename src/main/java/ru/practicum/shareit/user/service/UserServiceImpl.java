@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.BadRequestException;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -13,6 +13,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
@@ -28,44 +29,48 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User save(User user) {
         log.info("Start saving user {}", user);
 
-        checkUsersEmail(user.getEmail());
+        User savedUser = repository.save(user);
 
-        Long userId = repository.save(user);
-        User newUser = getById(userId);
+        log.info("Finish saving user {}", savedUser);
 
-        log.info("Finish saving user {}", user);
-
-        return newUser;
+        return savedUser;
     }
 
     @Override
     public User getById(Long userId) {
         log.info("Start getting user by id {}", userId);
 
-        User newUser = repository.findById(userId)
+        User gettingUser = repository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class.getSimpleName(), userId));
 
         log.info("Finish getting user by id {}", userId);
 
-        return newUser;
+        return gettingUser;
     }
 
     @Override
+    @Transactional
     public User update(Long userId, User user) {
         log.info("Start updating user by id {}", userId);
 
-        checkUserExist(userId);
+        User userForUpdate = getById(userId);
 
+        // Обновим Email
         String userEmail = user.getEmail();
         if (userEmail != null) {
-            checkUsersEmail(userEmail);
+            userForUpdate.setEmail(userEmail);
+        }
+        // Обновим имя
+        String userName = user.getName();
+        if (userName != null) {
+            userForUpdate.setName(userName);
         }
 
-        repository.update(userId, user);
-        User updatedUser = getById(userId);
+        User updatedUser = repository.save(userForUpdate);
 
         log.info("Finish updating user by id {}", userId);
 
@@ -73,24 +78,19 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long userId) {
         log.info("Start deletion user by id {}", userId);
 
-        repository.removeById(userId);
+        repository.deleteById(userId);
 
         log.info("Finish deletion user by id {}", userId);
     }
 
     @Override
     public void checkUserExist(Long userId) {
-        if (repository.isNotExist(userId)) {
+        if (!repository.existsById(userId)) {
             throw new NotFoundException(User.class.getSimpleName(), userId);
-        }
-    }
-
-    private void checkUsersEmail(String Email) {
-        if (repository.emailIsExist(Email)) {
-            throw new BadRequestException("Пользователь с Email " + Email + " уже существует.");
         }
     }
 }
