@@ -1,11 +1,12 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -21,10 +22,10 @@ public class ItemMapper {
         Optional<Booking> nextBookingOptional = getNextBooking(item, userId);
 
         Set<CommentDto.Nested> comments = item.getComments().stream()
-                .map(ItemMapper::toCommentDtoShort)
+                .map(ItemMapper::toCommentDtoNested)
                 .collect(Collectors.toSet());
 
-        return ItemDto.builder()
+        ItemDto itemDto = ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
@@ -33,14 +34,21 @@ public class ItemMapper {
                 .nextBooking(nextBookingOptional.map(BookingMapper::toBookingDtoShort).orElse(null))
                 .comments(comments)
                 .build();
+
+        ItemRequest request = item.getRequest();
+        if (request != null) {
+            itemDto.setRequestId(request.getId());
+        }
+
+        return itemDto;
     }
 
-    public static ItemDto.Nested toItemDtoShort(Item item, Long userId) {
+    public static ItemDto.Nested toItemDtoNested(Item item, Long userId) {
 
         Optional<Booking> lastBookingOptional = getLastBooking(item, userId);
         Optional<Booking> nextBookingOptional = getNextBooking(item, userId);
 
-        return ItemDto.Nested.builder()
+        ItemDto.Nested itemDtoNested = ItemDto.Nested.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
@@ -48,6 +56,13 @@ public class ItemMapper {
                 .lastBookingId(lastBookingOptional.map(Booking::getId).orElse(null))
                 .nextBookingId(nextBookingOptional.map(Booking::getId).orElse(null))
                 .build();
+
+        ItemRequest request = item.getRequest();
+        if (request != null) {
+            itemDtoNested.setRequestId(request.getId());
+        }
+
+        return itemDtoNested;
     }
 
     public static Item toItem(ItemDto item) {
@@ -76,7 +91,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static CommentDto.Nested toCommentDtoShort(Comment comment) {
+    public static CommentDto.Nested toCommentDtoNested(Comment comment) {
         return CommentDto.Nested.builder()
                 .id(comment.getId())
                 .text(comment.getText())

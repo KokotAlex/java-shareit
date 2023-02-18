@@ -1,10 +1,15 @@
 package ru.practicum.shareit.booking.service;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.MyPageRequest;
+import ru.practicum.shareit.booking.BookingRequestParam;
+import ru.practicum.shareit.booking.model.QBooking;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -15,6 +20,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -141,70 +147,106 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookingsByBookerId(Long bookerId, String state) {
-        log.info("Start getting {} bookings by booker with id {}", state, bookerId);
+    public List<Booking> getBookingsByBookerId(Long bookerId, BookingRequestParam params) {
+        log.info("Start getting {} bookings by booker with id {}", params.getState(), bookerId);
 
         userService.checkUserExist(bookerId);
 
-        List<Booking> bookings;
-        LocalDateTime now = LocalDateTime.now();
-        switch (state.toUpperCase()) {
-            case "CURRENT":
-                bookings = repository.findByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, now, now);
-                break;
-            case "PAST":
-                bookings = repository.findByBooker_IdAndEndBeforeOrderByStartDesc(bookerId, now);
-                break;
-            case "FUTURE":
-                bookings = repository.findByBooker_IdAndStartAfterOrderByStartDesc(bookerId, now);
-                break;
-            case "WAITING":
-            case "REJECTED":
-                bookings = repository.findByBooker_IdAndStatusOrderByStartDesc(bookerId, BookingStatus.valueOf(state));
-                break;
-            case "ALL":
-                bookings = repository.findByBooker_IdOrderByStartDesc(bookerId);
-                break;
-            default:
-                throw new BadRequestException("Unknown state: " + state);
-        }
+        // Для поиска запросов используем QueryDSL чтобы было удобно настраивать разные варианты фильтров
+        QBooking booking = QBooking.booking;
 
-        log.info("Finish getting {} bookings by booker with id {}", state, bookerId);
+        // Мы будем анализировать какие фильтры указал пользователь.
+        // Сформируем список фильтров, соответствующих интересуемому состоянию бронирования.
+        List<BooleanExpression> conditions = getStateConditions(booking, params.getState());
+
+        // Условие, которое будет проверяться всегда - пользователь сделавший запрос
+        // должен получить только свои бронирования.
+        conditions.add(booking.booker.id.eq(bookerId));
+
+        // из всех подготовленных условий, составляем единое условие
+        BooleanExpression finalCondition = conditions.stream()
+                .reduce(BooleanExpression::and)
+                .get();
+
+        Sort sort = Sort.by("Start").descending();
+        MyPageRequest pageRequest = new MyPageRequest(params.getFrom(), params.getSize(), sort);
+
+        Iterable<Booking> foundBookings = repository.findAll(finalCondition, pageRequest);
+
+        // Преобразуем результат поиска в список.
+        List<Booking> bookings = new ArrayList<>();
+        foundBookings.forEach(bookings::add);
+
+        log.info("Finish getting {} bookings by booker with id {}", params.getState(), bookerId);
 
         return bookings;
     }
 
     @Override
-    public List<Booking> getBookingsByOwnerId(Long ownerId, String state) {
-        log.info("Start getting {} bookings by owner with id {}", state, ownerId);
+    public List<Booking> getBookingsByOwnerId(Long ownerId, BookingRequestParam params) {
+        log.info("Start getting {} bookings by owner with id {}", params.getState(), ownerId);
 
         userService.checkUserExist(ownerId);
 
-        List<Booking> bookings;
+        // Для поиска запросов используем QueryDSL чтобы было удобно настраивать разные варианты фильтров
+        QBooking booking = QBooking.booking;
+
+        // Мы будем анализировать какие фильтры указал пользователь.
+        // Сформируем список фильтров, соответствующих интересуемому состоянию бронирования.
+        List<BooleanExpression> conditions = getStateConditions(booking, params.getState());
+
+        // Условие, которое будет проверяться всегда - необходимо получить бронирования
+        // вещей, принадлежащих указанному пользователю.
+        conditions.add(booking.item.owner.id.eq(ownerId));
+
+        // из всех подготовленных условий, составляем единое условие
+        BooleanExpression finalCondition = conditions.stream()
+                .reduce(BooleanExpression::and)
+                .get();
+
+        Sort sort = Sort.by("Start").descending();
+        MyPageRequest pageRequest = new MyPageRequest(params.getFrom(), params.getSize(), sort);
+
+        Iterable<Booking> foundBookings = repository.findAll(finalCondition, pageRequest);
+
+        // Преобразуем результат поиска в список.
+        List<Booking> bookings = new ArrayList<>();
+        foundBookings.forEach(bookings::add);
+
+        log.info("Finish getting {} bookings by owner with id {}", params.getState(), ownerId);
+
+        return bookings;
+    }
+
+    private static List<BooleanExpression> getStateConditions(QBooking booking, String state) {
+        List<BooleanExpression> conditions = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         switch (state.toUpperCase()) {
+            case "ALL":
+                break;
             case "CURRENT":
-                bookings = repository.findByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId, now, now);
+                // Получим текущие бронирования.
+                conditions.add(booking.start.before(now));
+                conditions.add(booking.end.after(now));
                 break;
             case "PAST":
-                bookings = repository.findByItem_Owner_IdAndEndBeforeOrderByStartDesc(ownerId, now);
+                // Получим завершенные бронирования.
+                conditions.add(booking.end.before(now));
                 break;
             case "FUTURE":
-                bookings = repository.findByItem_Owner_IdAndStartAfterOrderByStartDesc(ownerId, now);
+                // Получим будущие бронирования.
+                conditions.add(booking.start.after(now));
                 break;
             case "WAITING":
             case "REJECTED":
-                bookings = repository.findByItem_Owner_IdAndStatusOrderByStartDesc(ownerId, BookingStatus.valueOf(state));
-                break;
-            case "ALL":
-                bookings = repository.findByItem_Owner_IdOrderByStartDesc(ownerId);
+                // Получим завершенные или ожидающие подтверждения бронирования.
+                conditions.add(booking.status.eq(BookingStatus.valueOf(state)));
                 break;
             default:
                 throw new BadRequestException("Unknown state: " + state);
         }
 
-        log.info("Finish getting {} bookings by owner with id {}", state, ownerId);
-
-        return bookings;
+        return conditions;
     }
+
 }
