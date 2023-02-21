@@ -211,7 +211,7 @@
 					<configuration>
 						<output>file</output>
 						<excludes>
-							<exclude>${qСlassDirectory}/**</exclude>
+							<exclude>${qСlassDirectory}/**/*.class</exclude>
 						</excludes>
 					</configuration>
 					<executions>
