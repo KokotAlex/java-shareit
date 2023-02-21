@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.repository;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +28,10 @@ class ItemRepositoryTest {
     @BeforeEach
     void beforeEach() {
         user1 = userRepository.save(User.builder()
-                        .id(1L)
                         .email("user1@email")
                         .name("user1")
                         .build());
         item1 = itemRepository.save(Item.builder()
-                        .id(1L)
                         .available(true)
                         .owner(user1)
                         .name("item1")
@@ -43,7 +40,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    void findByOwnerOrderById() {
+    void findByOwnerOrderByIdTest() {
         final List<Item> byOwner = itemRepository.findByOwnerOrderById(user1);
         assertNotNull(byOwner);
         assertEquals(List.of(item1), byOwner);

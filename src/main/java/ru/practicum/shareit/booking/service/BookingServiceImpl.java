@@ -37,12 +37,12 @@ public class BookingServiceImpl implements BookingService {
     public Booking getById(Long bookingId) {
         log.info("Start getting booking by id {}", bookingId);
 
-        Booking foundedItem = repository.findById(bookingId)
+        Booking foundedBooking = repository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(Booking.class.getSimpleName(), bookingId));
 
         log.info("Finish getting booking by id {}", bookingId);
 
-        return foundedItem;
+        return foundedBooking;
     }
 
     @Override

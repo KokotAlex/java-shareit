@@ -11,7 +11,7 @@
 
 	<groupId>ru.practicum</groupId>
 	<artifactId>shareit</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<name>ShareIt</name>
 
 	<properties>
@@ -283,12 +283,10 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
-<!--						<version>3.1.2</version>-->
 					</plugin>
 					<plugin>
 						<groupId>com.github.spotbugs</groupId>
 						<artifactId>spotbugs-maven-plugin</artifactId>
-<!--						<version>4.7.3.0</version>-->
 					</plugin>
 				</plugins>
 			</build>
@@ -297,7 +295,6 @@
 					<plugin>
 						<groupId>com.github.spotbugs</groupId>
 						<artifactId>spotbugs-maven-plugin</artifactId>
-<!--						<version>4.7.3.0</version>-->
 					</plugin>
 				</plugins>
 			</reporting>
@@ -309,7 +306,6 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-<!--						<version>0.8.8</version>-->
 					</plugin>
 				</plugins>
 			</build>

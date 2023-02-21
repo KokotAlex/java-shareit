@@ -2,12 +2,12 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: none
-#      ddl-auto: create-drop
+#      ddl-auto: none
+      ddl-auto: create-drop
       properties:
         hibernate:
-          dialect: org.hibernate.dialect.PostgreSQL10Dialect
-#          dialect: org.hibernate.dialect.H2Dialect
+#          dialect: org.hibernate.dialect.PostgreSQL10Dialect
+          dialect: org.hibernate.dialect.H2Dialect
           format_sql: true
     show-sql: true
   sql:
@@ -22,12 +22,12 @@ spring:
 #      on-profile: ci,test
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/shareit?encoding=utf8
-#    url: jdbc:h2:mem:shareit
+#    url: jdbc:postgresql://localhost:5432/shareit?encoding=utf8
+    url: jdbc:h2:mem:shareit
     username: root
     password: root
-    driver-class-name: org.postgresql.Driver
-#    driver-class-name: org.h2.Driver
+#    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
 
 logging:
   level:
