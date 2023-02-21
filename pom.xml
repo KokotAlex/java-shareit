@@ -11,7 +11,7 @@
 
 	<groupId>ru.practicum</groupId>
 	<artifactId>shareit</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 	<name>ShareIt</name>
 
 	<properties>
@@ -210,6 +210,9 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
+						<excludes>
+							<exclude>${qСlassDirectory}/**</exclude>
+						</excludes>
 					</configuration>
 					<executions>
 						<execution>
