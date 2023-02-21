@@ -14,6 +14,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
@@ -48,6 +49,11 @@ class BookingControllerTest {
             .email("user@email.com")
             .name("user")
             .build();
+    final UserDto.Nested bookerDtoNested = UserDto.Nested.builder()
+            .id(booker.getId())
+            .email(booker.getEmail())
+            .name(booker.getName())
+            .build();
     final Item item = Item.builder()
             .id(1L)
             .name("Item")
@@ -76,6 +82,7 @@ class BookingControllerTest {
             .start(booking.getStart())
             .end(booking.getEnd())
             .status(BookingStatus.WAITING)
+            .booker(bookerDtoNested)
             .build();
 
     @Test
@@ -93,7 +100,10 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
                 .andExpect(jsonPath("$.start", is(bookingDto.getStart().format(dateFormat))))
                 .andExpect(jsonPath("$.end", is(bookingDto.getEnd().format(dateFormat))))
-                .andExpect(jsonPath("$.status", is(bookingDto.getStatus().toString())));
+                .andExpect(jsonPath("$.status", is(bookingDto.getStatus().toString())))
+                .andExpect(jsonPath("$.booker.id", is(bookingDto.getBooker().getId()), Long.class))
+                .andExpect(jsonPath("$.booker.email", is(bookingDto.getBooker().getEmail())))
+                .andExpect(jsonPath("$.booker.name", is(bookingDto.getBooker().getName())));
 
         verify(service, times(1))
                 .save(booker.getId(), booking, createBookingDto.getItemId());

@@ -210,9 +210,6 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
-						<excludes>
-							<exclude>${qСlassDirectory}/**/*.class</exclude>
-						</excludes>
 					</configuration>
 					<executions>
 						<execution>
@@ -230,6 +227,9 @@
 								<rules>
 									<rule>
 										<element>BUNDLE</element>
+										<excludes>
+											<exclude>${qСlassDirectory}/**</exclude>
+										</excludes>
 										<limits>
 											<limit>
 												<counter>INSTRUCTION</counter>
