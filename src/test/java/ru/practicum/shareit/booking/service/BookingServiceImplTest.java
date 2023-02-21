@@ -109,8 +109,8 @@ class BookingServiceImplTest {
                 .build();
         Booking exactingBooking = Booking.builder()
                 .id(1L)
-                .start(now().plusDays(2))
-                .end(now().plusMonths(1))
+                .start(bookingToSave.getStart())
+                .end(bookingToSave.getEnd())
                 .item(item)
                 .booker(booker)
                 .status(BookingStatus.WAITING)
