@@ -110,6 +110,34 @@ class BookingControllerTest {
     }
 
     @Test
+    void saveNewBooking_whenCreateBookingDtoIsNotCorrect_thenResponseStatus400Test() throws Exception {
+        CreateBookingDto anotherCreateBookingDto = CreateBookingDto.builder().build();
+        mockMvc.perform(post("/bookings")
+                        .header(headerUserId, booker.getId())
+                        .content(mapper.writeValueAsString(anotherCreateBookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(service, never())
+                .save(anyLong(), any(), anyLong());
+    }
+
+    @Test
+    void saveNewBooking_whenHeaderIsNotCorrect_thenResponseStatus500Test() throws Exception {
+        mockMvc.perform(post("/bookings")
+                        .content(mapper.writeValueAsString(createBookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(service, never())
+                .save(anyLong(), any(), anyLong());
+    }
+
+    @Test
     void approve_whenInvoked_thenResponseStatusOkWithBookingDtoInBodyTest() throws Exception {
         when(service.approve(booking.getBooker().getId(), booking.getId(), true))
                 .thenReturn(booking);

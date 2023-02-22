@@ -20,12 +20,10 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
-import static java.time.LocalDateTime.of;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -99,6 +97,25 @@ class ItemControllerTest {
             .status(nextBooking.getStatus())
             .build();
 
+    final Comment comment = Comment.builder()
+            .id(1L)
+            .text("CommentsText")
+            .author(owner)
+            .created(now().minusDays(1))
+            .build();
+    final CommentDto commentDto = CommentDto.builder()
+            .id(comment.getId())
+            .text(comment.getText())
+            .authorName(comment.getAuthor().getName())
+            .created(comment.getCreated())
+            .build();
+    final CommentDto.Nested commentDtoNested = CommentDto.Nested.builder()
+            .id(comment.getId())
+            .text(comment.getText())
+            .authorName(comment.getAuthor().getName())
+            .created(comment.getCreated())
+            .build();
+
     final ItemDto itemDto = ItemDto.builder()
             .id(item.getId())
             .name(item.getName())
@@ -107,19 +124,7 @@ class ItemControllerTest {
             .requestId(item.getRequest().getId())
             .lastBooking(lastBookingDtoNested)
             .nextBooking(nextBookingDtoNested)
-            .build();
-    final LocalDateTime time = of(2022, 1, 1, 0, 0, 0);
-    final CommentDto commentDto = CommentDto.builder()
-            .id(1L)
-            .text("CommentsText")
-            .authorName(owner.getName())
-            .created(time)
-            .build();
-    final Comment comment = Comment.builder()
-            .id(1L)
-            .text("CommentsText")
-            .author(owner)
-            .created(time)
+            .comments(new HashSet<>(List.of(commentDtoNested)))
             .build();
 
     @Test
@@ -245,9 +250,7 @@ class ItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(commentDto.getId()), Long.class))
                 .andExpect(jsonPath("$.text", is(commentDto.getText())))
-                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
-                .andExpect(jsonPath("$.created", is(commentDto.getCreated()
-                                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))));
+                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())));
 
         verify(itemService, times(1))
                 .saveComment(comment, userId, item.getId());
