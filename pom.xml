@@ -157,7 +157,7 @@
 				<configuration>
 					<output>file</output>
 					<excludes>
-						<exclude>target/generated-sources/java/**</exclude>
+						<exclude>**/Q*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -177,7 +177,7 @@
 								<rule>
 									<element>BUNDLE</element>
 									<excludes>
-										<exclude>target/generated-sources/java/**</exclude>
+										<exclude>**/Q*</exclude>
 									</excludes>
 									<limits>
 										<limit>
