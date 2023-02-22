@@ -8,6 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
@@ -21,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static java.time.LocalDateTime.of;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -50,13 +54,6 @@ class ItemControllerTest {
             .email("owner@email.com")
             .name("owner")
             .build();
-    final ItemDto itemDto = ItemDto.builder()
-            .id(1L)
-            .name("Item")
-            .description("Description")
-            .available(true)
-            .requestId(requestId)
-            .build();
 
     final Item item = Item.builder()
             .id(1L)
@@ -65,6 +62,51 @@ class ItemControllerTest {
             .available(true)
             .owner(owner)
             .request(ItemRequest.builder().id(requestId).build())
+            .build();
+
+    final Booking lastBooking = Booking.builder()
+            .id(1L)
+            .item(item)
+            .booker(item.getOwner())
+            .start(now().minusMonths(2))
+            .end(now().plusDays(1))
+            .status(BookingStatus.CANCELED)
+            .build();
+    final BookingDto.Nested lastBookingDtoNested = BookingDto.Nested.builder()
+            .id(lastBooking.getId())
+            .itemId(lastBooking.getItem().getId())
+            .bookerId(lastBooking.getBooker().getId())
+            .start(now().minusMonths(2))
+            .end(now().plusDays(1))
+            .status(BookingStatus.CANCELED)
+            .build();
+
+    final Booking nextBooking = Booking.builder()
+            .id(2L)
+            .item(item)
+            .booker(item.getOwner())
+            .start(now().plusDays(2))
+            .end(now().plusMonths(1))
+            .status(BookingStatus.APPROVED)
+            .build();
+
+    final BookingDto.Nested nextBookingDtoNested = BookingDto.Nested.builder()
+            .id(nextBooking.getId())
+            .itemId(nextBooking.getItem().getId())
+            .bookerId(nextBooking.getBooker().getId())
+            .start(nextBooking.getStart())
+            .end(nextBooking.getEnd())
+            .status(nextBooking.getStatus())
+            .build();
+
+    final ItemDto itemDto = ItemDto.builder()
+            .id(item.getId())
+            .name(item.getName())
+            .description(item.getDescription())
+            .available(item.getAvailable())
+            .requestId(item.getRequest().getId())
+            .lastBooking(lastBookingDtoNested)
+            .nextBooking(nextBookingDtoNested)
             .build();
     final LocalDateTime time = of(2022, 1, 1, 0, 0, 0);
     final CommentDto commentDto = CommentDto.builder()
@@ -82,6 +124,8 @@ class ItemControllerTest {
 
     @Test
     void saveNewItem_whenInvoked_thenResponseStatusOkWithItemDtoInBodyTest() throws Exception  {
+        item.getBookings().add(lastBooking);
+        item.getBookings().add(nextBooking);
         when(itemService.save(userId, item, itemDto.getRequestId()))
                 .thenReturn(item);
 

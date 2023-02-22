@@ -25,15 +25,4 @@ public class ItemRequestDto {
     private UserDto.Nested requestor;
     private Set<ItemDto.Nested> items;
 
-    @Builder
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Nested {
-        private Long id;
-        private String description;
-        private LocalDateTime created;
-        private Long requestorId;
-    }
 }
