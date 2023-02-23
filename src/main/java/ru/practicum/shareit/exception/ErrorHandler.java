@@ -5,45 +5,45 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler
-    public ResponseEntity<Object> handleNotFoundException(NotFoundException exception) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleNotFoundException(NotFoundException exception) {
         log.error("404: {}", exception.getMessage(), exception);
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ApiError("Entity not found", exception.getMessage()));
+
+        return new ApiError("Entity not found", exception.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException exception) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleValidationException(MethodArgumentNotValidException exception) {
         log.error("400: {}", exception.getMessage(), exception);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ApiError("Validation error", exception.getMessage()));
+
+        return new ApiError("Validation error", exception.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<Object> handleInternalException(Throwable exception) {
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleInternalException(Throwable exception) {
         log.error("500: {}", exception.getMessage(), exception);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError("500", exception.getMessage()));
+
+        return new ApiError("500", exception.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<Object> incorrectParameterException(BadRequestException exception) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError incorrectParameterException(BadRequestException exception) {
         log.error("400: {}", exception.getMessage(), exception);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ApiError("Bad Request", exception.getMessage()));
+
+        return new ApiError("Bad Request", exception.getMessage());
     }
 
     @Data

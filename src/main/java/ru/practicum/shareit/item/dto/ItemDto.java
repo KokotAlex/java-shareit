@@ -30,6 +30,7 @@ public class ItemDto {
     private BookingDto.Nested lastBooking;
     private BookingDto.Nested nextBooking;
     private Set<CommentDto.Nested> comments;
+    private long requestId;
 
     @Builder
     @Getter
@@ -43,6 +44,7 @@ public class ItemDto {
         private Boolean available;
         private Long lastBookingId;
         private Long nextBookingId;
+        private long requestId;
     }
 
 

@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface ItemService {
 
-    Item save(Long ownerId, Item item);
+    Item save(Long ownerId, Item item, Long requestId);
 
     Item getById(Long itemId);
 
-    Item update(Long ownerId, Long itemId, Item item);
+    Item update(Long ownerId, Long itemId, Long requestId, Item item);
 
     List<Item> getAll(Long ownerId);
 

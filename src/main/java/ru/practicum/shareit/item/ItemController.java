@@ -28,7 +28,7 @@ public class ItemController {
         log.info("Handling a request to create a new item for owner with id {}", ownerId);
 
         Item item = ItemMapper.toItem(itemDto);
-        Item savedItem = service.save(ownerId, item);
+        Item savedItem = service.save(ownerId, item, itemDto.getRequestId());
 
         return ItemMapper.toItemDto(savedItem, ownerId);
     }
@@ -40,7 +40,7 @@ public class ItemController {
         log.info("Handling a request to update the item with id {} for owner with id {}", itemId, ownerId);
 
         Item item = ItemMapper.toItem(itemDto);
-        Item updatedItem = service.update(ownerId, itemId, item);
+        Item updatedItem = service.update(ownerId, itemId, itemDto.getRequestId(), item);
 
         return ItemMapper.toItemDto(updatedItem, ownerId);
     }

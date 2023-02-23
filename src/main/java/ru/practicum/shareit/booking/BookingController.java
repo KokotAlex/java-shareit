@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
@@ -55,10 +56,17 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllByBooker(@RequestHeader(HEADER_AUTHOR_ID) Long bookerId,
-                                   @RequestParam(defaultValue = "ALL") String state) {
+                                           @RequestParam(defaultValue = "ALL") String state,
+                                           @RequestParam(defaultValue = "0") Integer from,
+                                           @RequestParam(defaultValue = "30") Integer size) {
         log.info("Processing a getting {} bookings for booker id {}", state, bookerId);
 
-        List<Booking> bookings = service.getBookingsByBookerId(bookerId, state);
+        BookingRequestParam params = BookingRequestParam.builder()
+                .from(from)
+                .size(size)
+                .state(state)
+                .build();
+        List<Booking> bookings = service.getBookingsByBookerId(bookerId, params);
 
         return bookings.stream()
                 .map(booking -> BookingMapper.toBookingDto(booking, bookerId))
@@ -67,10 +75,17 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(@RequestHeader(HEADER_AUTHOR_ID) Long ownerId,
-                                   @RequestParam(defaultValue = "ALL") String state) {
+                                          @RequestParam(defaultValue = "ALL") String state,
+                                          @RequestParam(defaultValue = "0") Integer from,
+                                          @RequestParam(defaultValue = "30") Integer size) {
         log.info("Processing a getting {} bookings for owner id {}", state, ownerId);
 
-        List<Booking> bookings = service.getBookingsByOwnerId(ownerId, state);
+        BookingRequestParam params = BookingRequestParam.builder()
+                .from(from)
+                .size(size)
+                .state(state)
+                .build();
+        List<Booking> bookings = service.getBookingsByOwnerId(ownerId, params);
 
         return bookings.stream()
                 .map(booking -> BookingMapper.toBookingDto(booking, ownerId))

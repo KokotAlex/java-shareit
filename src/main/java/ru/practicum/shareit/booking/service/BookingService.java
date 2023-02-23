@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRequestParam;
+import ru.practicum.shareit.booking.model.Booking;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface BookingService {
 
     Booking getByIdAndUserId(Long bookingId, Long userId);
 
-    List<Booking> getBookingsByBookerId(Long bookerId, String state);
+    List<Booking> getBookingsByBookerId(Long bookerId, BookingRequestParam params);
 
-    List<Booking> getBookingsByOwnerId(Long ownerId, String state);
+    List<Booking> getBookingsByOwnerId(Long ownerId, BookingRequestParam params);
 }

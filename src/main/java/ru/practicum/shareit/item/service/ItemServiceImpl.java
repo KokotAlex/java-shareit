@@ -12,6 +12,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.QItem;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.service.RequestService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -28,11 +30,17 @@ public class ItemServiceImpl implements ItemService {
     public final ItemRepository itemRepository;
     public final CommentRepository commentRepository;
     public final UserService userService;
+    public final RequestService requestService;
 
     @Override
     @Transactional
-    public Item save(Long ownerId, Item item) {
+    public Item save(Long ownerId, Item item, Long requestId) {
         log.info("Start saving item {}", item);
+
+        if (requestId != null && requestId > 0) {
+            ItemRequest itemRequest = requestService.getById(requestId);
+            item.setRequest(itemRequest);
+        }
 
         User owner = userService.getById(ownerId);
 
@@ -58,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item update(Long ownerId, Long itemId, Item item) {
+    public Item update(Long ownerId, Long itemId, Long requestId, Item item) {
         log.info("Start updating item by id {} for owner with id {}", itemId, ownerId);
 
         User currentOwner = userService.getById(ownerId);
@@ -84,6 +92,11 @@ public class ItemServiceImpl implements ItemService {
 
         if (description != null) {
             itemForUpdate.setDescription(description);
+        }
+
+        if (requestId != null && requestId > 0) {
+            ItemRequest itemRequest = requestService.getById(requestId);
+            itemForUpdate.setRequest(itemRequest);
         }
 
         // Запишем обновленную вещь.
