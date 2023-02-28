@@ -1,0 +1,40 @@
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+#      ddl-auto: create-drop
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQL10Dialect
+#          dialect: org.hibernate.dialect.H2Dialect
+          format_sql: true
+    show-sql: true
+  sql:
+    init:
+      mode: always
+  data:
+    rest:
+      basePath: /api
+
+#  config:
+#    activate:
+#      on-profile: ci,test
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shareit?encoding=utf8
+#    url: jdbc:h2:mem:shareit
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+#    driver-class-name: org.h2.Driver
+
+logging:
+  level:
+    org.springframework:orm.jpa: info
+    org.springframework.orm.jpa.JpaTransactionManager: debug
+    org.springframework.transaction: info
+    org.springframework.transaction.interceptor: trace
+
+server:
+  port: 9090
