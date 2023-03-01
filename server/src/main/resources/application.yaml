@@ -23,7 +23,7 @@ spring:
     password: ${POSTGRES_PASSWORD:root}
     url: jdbc:postgresql://localhost:5432/shareit?encoding=utf8
   sql:
-    ini:
+    init:
       mode: always
   data:
     rest:
@@ -34,8 +34,8 @@ server:
 spring:
   datasource:
     driverClassName: org.h2.Driver
-    username: ${POSTGRES_USER:root}
-    password: ${POSTGRES_PASSWORD:root}
+    username: ${POSTGRES_USER:test}
+    password: ${POSTGRES_PASSWORD:test}
     url: jdbc:h2:mem:shareit
   config:
     activate:
