@@ -1,0 +1,42 @@
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa:
+            JpaTransactionManager: DEBUG
+            nodeValue: INFO
+        transaction:
+          interceptor: TRACE
+          nodeValue: INFO
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: none
+  datasource:
+    driverClassName: org.postgresql.Driver
+    username: ${POSTGRES_USER:root}
+    password: ${POSTGRES_PASSWORD:root}
+    url: ${SPRING_DATASOURCE_URL}
+  sql:
+    init:
+      mode: always
+  data:
+    rest:
+      base-path: /api
+server:
+  port: '9090'
+---
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    username: ${POSTGRES_USER:test}
+    password: ${POSTGRES_PASSWORD:test}
+    url: jdbc:h2:mem:${POSTGRES_DB}
+  config:
+    activate:
+      on-profile: ci,test
