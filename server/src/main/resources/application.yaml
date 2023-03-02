@@ -21,7 +21,7 @@ spring:
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:root}
     password: ${POSTGRES_PASSWORD:root}
-    url: jdbc:postgresql://localhost:5432/shareit?encoding=utf8
+    url: ${SPRING_DATASOURCE_URL}
   sql:
     init:
       mode: always
@@ -36,7 +36,7 @@ spring:
     driverClassName: org.h2.Driver
     username: ${POSTGRES_USER:test}
     password: ${POSTGRES_PASSWORD:test}
-    url: jdbc:h2:mem:shareit
+    url: jdbc:h2:mem:${POSTGRES_DB}
   config:
     activate:
       on-profile: ci,test
